@@ -1,0 +1,17 @@
+nav{width: 100%;}
+.nav {
+    display: flex;
+    list-style: none;
+    
+
+}
+
+.nav li, .nav a {
+    color: var(--lighter);
+    text-decoration: none;
+    margin: auto 8px;
+}
+
+.nav li:last-of-type {
+    margin-left: auto;
+}
