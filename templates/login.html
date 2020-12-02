@@ -1,0 +1,35 @@
+{% extends "init_page.html" %}
+{% block main %}
+<main>
+    
+    <div class="container">
+
+        <form action="" method="POST"  class="login-box">
+            <h2>login</h2>
+            <input type="text" name="name" placeholder="username" {{ name }}>
+            <input type="password" name="pass" placeholder="password">
+            <input type="submit" value="login" name="login">
+        </form>
+        <div class="errbox">
+            {{ err }}
+        </div>
+        <form action="" method="POST"  class="login-box" >
+            <h2>sign up</h2>
+            <input type="text" name="name" placeholder="username" value={{ name }}>
+            <input type="password" name="pass" placeholder="password">
+            <input type="password" name="passCon" placeholder="confirm password">
+            <input type="submit" value="login" name="signup">
+        </form>
+    </div>
+</main>
+<script type="text/javascript"src="static/js/main.js"></script>
+<script type="text/javascript"src="static/js/type.js"></script>
+
+
+
+
+
+
+
+{% endblock %}
+

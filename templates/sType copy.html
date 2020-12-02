@@ -1,0 +1,188 @@
+{% extends "init_page.html" %}
+{% block main %}
+<main>
+    <div class="timer" id=timer>15s</div>
+
+        <button id="settings-btn" onclick="showSettings()"><i class="fas fa-cogs"></i></button>
+        <div class="test-controls">
+            <div class="select">
+                <select onchange="setTime(this.value);">
+                  <option value="15">15s</option>
+                  <option value="30">30s</option>
+                  <option value="60">60s</option>
+                </select>
+            </div>
+            <div class="select">
+                <select>
+                  <option value="en">English</option>
+                  <option value="kr">Korean</option>
+                </select>
+            </div>
+        </div>
+        <div class="scores-panel">
+            <div class="section">
+                <span class="t-small">Test: {{test}}</span>
+                <span class="t-small">Time: <span id="score-time"></span></span>
+                <span class="t-small">Login to save your stats</span>
+                <a href="{{url_for('root')}}" class="t-small"><i class="fas fa-play"></i> Play Again</a>
+                
+            </div>
+            <div class="section">
+                <span class="t-small">Correct Chars</span>
+                <span class="t-big" id="score-c">9</span>
+            </div>
+            <div class="section">
+                <span class="t-small">WPM</span>
+                <span class="t-big" id="score-wpm">90</span>
+            </div>
+            
+        </div>
+        <div class="text-frame text">
+
+            {% for words in testWords %} 
+            <div class="word">
+                {% for c in words %}
+                <div id="c">{{ c }}</div>
+                {%endfor%}
+            </div>
+            <div class="space" id="c"></div>
+        
+            {%endfor%}
+        </div>
+
+        
+
+    <input type="text" id="userInput" onkeyup="compare()" onkeydown="checkBackspace(event)">
+    ((cChar-1)/time_contraint*60/5);
+</main>
+
+<form action="" method="post" id="submit_scores">
+    <input type="hidden" name="correct" value="" id="in_correct">
+    <input type="hidden" name="total" value="in_total">
+    <input type="hidden" name="time" value="" id="in_time">
+    <input type="hidden" name="lang" value="" id="in_lang">
+</form>
+
+<script>
+    let t = '';
+    window.onload = function() {
+        
+        
+        {% for words in testWords %}
+        testWord = "{{words}}";
+        t += testWord.trim() + ' ';
+        {%endfor%}
+        
+          
+        t = t.trim();
+
+        word = document.querySelectorAll('.word');
+
+        for (i in word) {
+            if (i > 64) {
+                word[i].style.display = "none";
+            }
+        }
+    }
+
+    var open = 0;
+    function showSettings(){
+        if (open == 0){
+            document.querySelector(".text-frame").style.opacity = 0;
+            document.querySelector("#userInput").style.opacity = 0;
+            document.querySelector(".test-controls").style.display = "flex";
+            open = 1;
+        } else {
+            document.querySelector(".text-frame").style.opacity = 1;
+            document.querySelector("#userInput").style.opacity = 1;
+            document.querySelector(".test-controls").style.display = "none";
+            open = 0;
+        }
+    }
+
+var time = 15;
+function setTime(seconds){
+    time = seconds;
+    document.getElementById("timer").innerHTML = time + 's';
+}
+//var myVar = setInterval(myTimer, 1000);
+
+function showScores(){
+    document.querySelector('.scores-panel').style.display = "flex";
+    document.querySelector(".text-frame").style.opacity = 0;
+    document.querySelector("#userInput").style.opacity = 0
+}
+
+var time_contraint = time;
+function myTimer() {
+    var d = new Date();
+    
+    if (time > 0 ) {
+        time--;
+    }
+
+    document.getElementById("timer").innerHTML = time + 's';
+
+    if (time == 0 && testOn == true) {
+        {% if session['logggedin'] %}
+        document.getElementById("in_correct").value = cChar;
+        document.getElementById("in_total").value = nChar;
+        document.getElementById("in_time").value = time_contraint;
+        document.getElementById("in_lang").value = "{{testWords}}";
+        document.getElementById("submit_score").submit();
+        {%endif%}
+        showScores();
+        var wpm = (cChar-1)/time_contraint*60/5;
+        document.getElementById("score-time").innerHTML = time_contraint;
+        document.getElementById("score-wpm").innerHTML = wpm;
+        document.getElementById("score-c").innerHTML = cChar;
+        testOn = false;
+    }
+}
+
+var testOn = false; // test default state
+
+let cChar = 0, // correct characters
+    xChar = 0, // current character / variable
+    tChar = document.querySelectorAll("#c"),
+    nChar = 0; // total characters
+
+function compare(){
+    typedText = document.getElementById("userInput").value;
+    var ttArray = typedText.split('');
+    var tArray = t.split('');
+
+    if (testOn == false ){
+        testOn = true;
+        setInterval(myTimer, 1000);
+    }
+
+    nChar++;
+    if (ttArray[xChar] == tArray[xChar]){
+        cChar++;
+        xChar++;
+        console.log({'CurrentX': xChar, 'Correct': cChar});
+    }
+}
+
+function checkBackspace(event){
+    let key = event.key;
+    if (key == 'Backspace' && xChar > 0){
+        
+        tChar[xChar-1].style.color = "var(--lighter)";
+
+        if (xChar == cChar){
+            cChar--;
+        }
+
+        xChar--;
+        console.log("backspace hit", xChar);
+    } 
+
+}
+
+</script>
+
+<!-- <script type="text/javascript"src="static/js/type.js"></script> -->
+{% endblock %}
+

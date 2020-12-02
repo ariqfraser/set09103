@@ -1,0 +1,48 @@
+{% extends "init_page.html" %}
+{% block main %}
+<main>
+    <h1 class="t-dgrey">Select a lobby</h1>
+    <div class="container">
+        <div class="lobby-box">
+            <img src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fi.redditmedia.com%2FM9k1d9j8syJLIB7tKhllqwsMK72lHAFRJ1Bk0xT8tj8.png%3Fw%3D320%26s%3D758b8f581640b688391ee974f492776a&f=1&nofb=1" alt="English Language Test">
+            <span>0/6</span>
+        </div>
+        <div class="lobby-box">
+            <img src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fwallpapercave.com%2Fwp%2Fwp2134643.jpg&f=1&nofb=1" alt="Indonesian Language Test">
+            <span>0/6</span>
+        </div>
+        <div class="lobby-box">
+            <img src="https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Fupload.wikimedia.org%2Fwikipedia%2Fcommons%2Fthumb%2F0%2F09%2FFlag_of_South_Korea.svg%2F1200px-Flag_of_South_Korea.svg.png&f=1&nofb=1" alt="Korean Language Test">
+            <span>0/6</span>
+        </div>
+    </div>
+
+        <!-- {% for words in testWords %} 
+        <div class="word">
+            {% for c in words %}
+            <div id="c">{{ c }}</div>
+            {%endfor%}
+        </div>
+        <div class="space" id="c"></div>
+    
+        {%endfor%}
+         -->
+
+    </div>
+</main>
+<script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
+<script type="text/javascript" charset="utf-8">
+    var socket = io.connect('http://webtech-15.napier.ac.uk:5000'); 
+    var socket_private = io('http://webtech-15.napier.ac.uk:5000/private')
+    
+    socket.on('connect', function() {
+        //socket.send('my event', {data: 'I\'m connected!'});
+        socket_private.emit('username', "HELLO")
+    });
+
+    socket_private.emit('username', "HELLO")
+</script>
+
+<!-- <script type="text/javascript"src="static/js/type.js"></script> -->
+{% endblock %}
+

@@ -1,12 +1,4 @@
-window.onload = function() {
-    var userInput = document.getElementById("userInput");
 
-    var JSONItems = []; 
-    $.getJSON( "static/eng1000.json", function(data){ 
-      JSONItems = data; 
-      console.log(JSONItems); 
-    }); 
-}
 
 //var myVar = setInterval(myTimer, 1000);
 var time = 15;
@@ -26,7 +18,7 @@ function myTimer() {
 }
 
 var testOn = false; // test default state
-let t = "hello hello";
+
 let cChar = 0, // correct characters
     xChar = 0, // current character / variable
     tChar = document.querySelectorAll("#c");

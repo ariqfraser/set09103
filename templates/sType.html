@@ -1,0 +1,206 @@
+{% extends "init_page.html" %}
+{% block main %}
+<main>
+    <div class="timer" id=timer>15s</div>
+
+        <button id="settings-btn" onclick="showSettings()"><i class="fas fa-cogs"></i></button>
+        <div class="test-controls">
+            <div class="select">
+                <select onchange="setTime(this.value);">
+                  <option value="15">15s</option>
+                  <option value="30">30s</option>
+                  <option value="60">60s</option>
+                </select>
+            </div>
+            <div class="select">
+                <form action="" method="get">
+                    <select name="lang" onchange="this.submit">
+                        <option value="en">English</option>
+                        <option value="kr">Korean</option>
+                      </select>
+                </form>
+                
+            </div>
+        </div>
+        <div class="scores-panel">
+            <div class="section">
+                <span class="t-small">Test: {{test}}</span>
+                <span class="t-small">Time: <span id="score-time"></span></span>
+                {% if session['loggedin'] == False %}
+                <span class="t-small">Login to save your stats</span>
+                {%endif%}
+                <a href="{{url_for('root')}}" class="t-small"><i class="fas fa-play"></i> Play Again</a>
+                
+            </div>
+            <div class="section">
+                <span class="t-small">Correct Chars</span>
+                <span class="t-big" id="score-c">9</span>
+            </div>
+            <div class="section">
+                <span class="t-small">WPM</span>
+                <span class="t-big" id="score-wpm">90</span>
+            </div>
+            
+        </div>
+        <div class="text-frame text">
+
+            {% for words in testWords %} 
+            <div class="word">
+                {% for c in words %}
+                <div id="c">{{ c }}</div>
+                {%endfor%}
+            </div>
+            <div class="space" id="c"></div>
+        
+            {%endfor%}
+        </div>
+
+        
+
+    <input type="text" id="userInput" onkeypress="check(event)" onkeydown="checkBackspace(event)">
+    
+</main>
+
+<form action="" method="post" id="submit_scores">
+    <input type="hidden" name="correct" value="" id="in_correct">
+    <input type="hidden" name="total" value="" id="in_total">
+    <input type="hidden" name="time" value="" id="in_time">
+    <input type="hidden" name="lang" value="" id="in_lang">
+</form>
+
+<script>
+    let t = '';
+    window.onload = function() {
+        
+        
+        {% for words in testWords %}
+        testWord = "{{words}}";
+        t += testWord.trim() + ' ';
+        {%endfor%}
+        
+          
+        t = t.trim();
+
+        word = document.querySelectorAll('.word');
+
+        for (i in word) {
+            if (i > 64) {
+                word[i].style.display = "none";
+            }
+        }
+    }
+
+    var open = 0;
+    function showSettings(){
+        if (open == 0){
+            document.querySelector(".text-frame").style.opacity = 0;
+            document.querySelector("#userInput").style.opacity = 0;
+            document.querySelector(".test-controls").style.display = "flex";
+            open = 1;
+        } else {
+            document.querySelector(".text-frame").style.opacity = 1;
+            document.querySelector("#userInput").style.opacity = 1;
+            document.querySelector(".test-controls").style.display = "none";
+            open = 0;
+        }
+    }
+
+var time = 15;
+function setTime(seconds){
+    time = seconds;
+    document.getElementById("timer").innerHTML = time + 's';
+}
+//var myVar = setInterval(myTimer, 1000);
+
+function showScores(){
+    document.querySelector('.scores-panel').style.display = "flex";
+    document.querySelector(".text-frame").style.opacity = 0;
+    document.querySelector("#userInput").style.opacity = 0;
+    document.querySelector(".test-controls").style.opacity = 0;
+}
+
+var time_contraint = time;
+function myTimer() {
+    var d = new Date();
+    
+    if (time > 0 ) {
+        time--;
+    }
+
+    document.getElementById("timer").innerHTML = time + 's';
+
+    if (time == 0 && testOn == true) {
+        {% if session['loggedin'] %}
+        document.getElementById("in_correct").value = cChar;
+        document.getElementById("in_total").value = nChar;
+        document.getElementById("in_time").value = time_contraint;
+        document.getElementById("in_lang").value = "{{testWords}}";
+        document.getElementById("submit_scores").submit();
+        {%endif%}
+        showScores();
+        var wpm = (cChar-1)/time_contraint*60/5;
+        document.getElementById("score-time").innerHTML = time_contraint;
+        document.getElementById("score-wpm").innerHTML = wpm;
+        document.getElementById("score-c").innerHTML = cChar;
+        testOn = false;
+    }
+}
+
+var testOn = false; // test default state
+
+let cChar = 0, // correct characters
+    xChar = 0, // current character / variable
+    tChar = document.querySelectorAll("#c"),
+    nChar = 0; // total characters
+
+    function check(event){
+    if (testOn == false ){
+        testOn = true;
+
+        setInterval(myTimer, 1000);
+    }
+    nChar++;
+    //console.log("Timer Start");
+
+    // check first character
+    let x = event.which;
+
+    // console.log(event);
+    if (x == ''){
+        x = ' ';
+    }
+
+    if (String.fromCharCode(x) != t.charAt(xChar)){ // check if wrong key is entered
+        console.log("no");
+        tChar[xChar].style.color = "red";
+        xChar++;
+    } else{ // correct key entered
+        console.log("correct");
+        tChar[xChar].style.color = "green";
+        cChar++;
+        xChar++;
+    }
+}
+
+function checkBackspace(event){
+    let key = event.key;
+    if (key == 'Backspace' && xChar > 0){
+        
+        tChar[xChar-1].style.color = "var(--lighter)";
+
+        if (xChar == cChar){
+            cChar--;
+        }
+
+        xChar--;
+        console.log("backspace hit", xChar);
+    } 
+    console.log({"current":xChar,'correct':cChar,'event.which':String.fromCharCode(event.which),"test char":t.charAt(xChar),"event.key":event.key});
+
+}
+
+</script>
+
+<!-- <script type="text/javascript"src="static/js/type.js"></script> -->
+{% endblock %}
+

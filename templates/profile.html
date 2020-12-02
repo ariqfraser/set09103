@@ -1,0 +1,30 @@
+{% extends "init_page.html" %}
+{% block main %}
+
+<main>
+    
+    <h1 class="t-grey">{{ active.name }}'s Profile</h1>
+    <div class="profile-box-w">
+        <div>15s WPM<span>{{ active.wpm15}}</span></div>
+        <div>30s WPM<span>{{ active.wpm30}}</span></div>
+        <div>60s WPM<span>{{ active.wpm60}}</span></div>
+    </div>
+
+    {% if session['name'] == active.name %}
+    <div class="profile-box-w">
+        <div>
+            <h2 class="t-grey">Delete Account</h2>
+            <p>This will delete all your saved data. If you are sure, please confirm your password.</p>
+            <form action="" method="POST">
+                <input type="hidden" name="name" value="{{active.name}}">
+                <input type="password" name=pass placeholder="Confirm Password">
+                <input type="submit">
+            </form>
+        </div>
+    </div>
+    {% endif %}
+
+</main>
+
+{% endblock %}
+

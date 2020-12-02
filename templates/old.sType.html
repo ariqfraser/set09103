@@ -1,0 +1,166 @@
+{% extends "init_page.html" %}
+{% block main %}
+<main>
+    <div class="timer" id=timer>15s</div>
+
+        <button id="settings-btn" onclick="showSettings()"><i class="fas fa-cogs"></i></button>
+        <div class="test-controls">
+            <div class="select">
+                <select onchange="setTime(this.value);">
+                  <option value="15">15s</option>
+                  <option value="30">30s</option>
+                  <option value="60">60s</option>
+                </select>
+            </div>
+            <div class="select">
+                <select>
+                  <option value="en">English</option>
+                  <option value="id">Indonesian</option>
+                  <option value="kr">Korean</option>
+                </select>
+            </div>
+        </div>
+        <div class="text-frame text">
+
+            {% for words in testWords %} 
+            <div class="word">
+                {% for c in words %}
+                <div id="c">{{ c }}</div>
+                {%endfor%}
+            </div>
+            <div class="space" id="c"></div>
+        
+            {%endfor%}
+        </div>
+
+        
+
+    <input type="text" id="userInput" onkeypress="check(event)" onkeydown="checkBackspace(event)">
+    ((cChar-1)/time_contrainst*60/5);
+</main>
+
+<form action="" method="post" id="sub_scores">
+    <input type="hidden" name="wpm" value="" id="in_wpm">
+    <input type="hidden" name="time" value="" id="in_time">
+    <input type="hidden" name="lang" value="" id="in_lang">
+</form>
+
+<script>
+    let t = '';
+    window.onload = function() {
+        
+        
+        {% for words in testWords %}
+        testWord = "{{words}}";
+        t += testWord.trim() + ' ';
+        {%endfor%}
+        
+          
+        t = t.trim();
+
+        word = document.querySelectorAll('.word');
+
+        for (i in word) {
+            if (i > 64) {
+                word[i].style.display = "none";
+            }
+        }
+    }
+
+    var open = 0;
+    function showSettings(){
+        if (open == 0){
+            document.querySelector(".text-frame").style.opacity = 0;
+            document.querySelector("#userInput").style.opacity = 0;
+            document.querySelector(".test-controls").style.display = "flex";
+            open = 1;
+        } else {
+            document.querySelector(".text-frame").style.opacity = 1;
+            document.querySelector("#userInput").style.opacity = 1;
+            document.querySelector(".test-controls").style.display = "none";
+            open = 0;
+        }
+    }
+
+var time = 15;
+function setTime(seconds){
+    time = seconds;
+    document.getElementById("timer").innerHTML = time + 's';
+}
+//var myVar = setInterval(myTimer, 1000);
+
+var time_contrainst = time;
+function myTimer() {
+    var d = new Date();
+    
+    if (time > 0 ) {
+        time--;
+    }
+
+    document.getElementById("timer").innerHTML = time + 's';
+
+    if (time == 0 && testOn == true) {
+        document.getElementById("sub_score").value =
+        document.getElementById("sub_score").submit();
+        //alert((cChar-1)/time_contrainst*60/5);
+        testOn = false;
+    }
+}
+
+var testOn = false; // test default state
+
+let cChar = 0, // correct characters
+    xChar = 0, // current character / variable
+    tChar = document.querySelectorAll("#c");
+
+function check(event){
+    if (testOn == false ){
+        testOn = true;
+
+        setInterval(myTimer, 1000);
+    }
+    
+    //console.log("Timer Start");
+
+    // check first character
+    let x = event.which;
+
+    // console.log(event);
+    if (x == ''){
+        x = ' ';
+    }
+
+    if (String.fromCharCode(x) != t.charAt(xChar)){ // check if wrong key is entered
+        console.log("no");
+        tChar[xChar].style.color = "red";
+        xChar++;
+    } else{ // correct key entered
+        console.log("correct");
+        tChar[xChar].style.color = "green";
+        cChar++;
+        xChar++;
+    }
+}
+
+function checkBackspace(event){
+    let key = event.key;
+    if (key == 'Backspace' && xChar > 0){
+        
+        tChar[xChar-1].style.color = "var(--lighter)";
+
+        if (xChar == cChar){
+            cChar--;
+        }
+
+        xChar--;
+        console.log("backspace hit", xChar);
+    } 
+    console.log({"current":xChar,'correct':cChar,'event.which':String.fromCharCode(event.which),"test char":t.charAt(xChar),"event.key":event.key});
+
+}
+
+</script>
+
+<!-- <script type="text/javascript"src="static/js/type.js"></script> -->
+{% endblock %}
+
